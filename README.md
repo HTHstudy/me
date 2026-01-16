@@ -20,4 +20,4 @@ Visit the documentation site: **[https://hthstudy.github.io/React-but-with-Reaso
 
 ## License
 
-MIT
+This work is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) - you are free to use and adapt this content as long as you provide attribution.

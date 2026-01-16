@@ -3,11 +3,11 @@ layout: default
 title: 관심사 분리
 parent: Mental Model
 grand_parent: 한국어
-nav_order: 1
+nav_order: 2
 permalink: /docs/ko/mental-model/separation-of-concerns
 ---
 
-# 관심사 분리: Variant 추상화가 경계를 침범할 때
+# 관심사 분리: 경계를 판단하는 기준
 
 ## 들어가며 — 왜 이 이야기를 하게 되었는가
 
@@ -34,36 +34,42 @@ permalink: /docs/ko/mental-model/separation-of-concerns
 
 ---
 
-## 이 문서에서 말하는 Variant란?
+## 이 문서에서 말하는 props 확장이란?
 
-이 문서에서 말하는 Variant는  
-단순한 props 옵션이나 조건 분기를 의미하지 않는다.
+실무에서 코드 중복을 줄이기 위해  
+자주 사용하는 방법 중 하나는  
+**하나의 추상화에 props를 추가해서 차이를 흡수하는 방식**이다.
 
-Variant란 본래  
-**같은 책임과 같은 의미를 가진 대상이  
-표현 방식만 다르게 드러나는 경우**를 말한다.
-
-예를 들어 버튼 컴포넌트에서의 Variant는 보통 이런 경우다.
+예를 들어 버튼 컴포넌트에서 표현을 바꾸기 위해  
+이런 방식을 사용한다.
 
 ```tsx
 <Button variant="primary" />
 <Button variant="secondary" />
 ```
 
-이 두 컴포넌트는 서로 다른 버튼이 아니다.
-여전히 같은 “버튼”이고,
+이 방식은  
+같은 책임을 가진 대상이  
+표현만 다를 때는 유효하다.
+
+두 버튼은 서로 다른 것이 아니다.  
+여전히 같은 "버튼"이고,  
 역할과 책임도 변하지 않는다.
 
 달라지는 것은 오직 표현이다.
 
+하지만 문제는  
+이 방식을 표현의 차이를 넘어  
+**의미와 책임의 차이까지 흡수하려 할 때** 발생한다.
+
 이 문서에서 사용하는 기준은 명확하다.
 
-> Variant는 표현의 차이일 수는 있지만,  
-> 의미나 책임의 차이가 되어서는 안 된다.
+> props 추가는 표현의 차이를 다룰 수는 있지만,  
+> 의미나 책임의 차이를 대신할 수는 없다.
 
-이 기준을 벗어나는 순간,
-Variant 기반 추상화는
-관심사 분리를 돕는 도구가 아니라
+이 기준을 벗어나는 순간,  
+props 추가는  
+관심사 분리를 돕는 도구가 아니라  
 경계를 흐리는 장치가 된다.
 
 ---
@@ -112,6 +118,8 @@ export const Page = ({ type }: { type: 'A' | 'B' | 'C' }) => {
 그 원인은 구현의 문제가 아니라  
 **경계를 잘못 설정한 데** 있었다.
 
+---
+
 ### 변경의 국소성
 
 페이지 A의 요구사항을 수정해야 할 때,  
@@ -126,6 +134,7 @@ export const Page = ({ type }: { type: 'A' | 'B' | 'C' }) => {
 그 결과, 특정 페이지의 변경이  
 공유 레이어까지 영향을 미치게 되었다.
 
+---
 ### 공유 레이어의 오염
 
 문제가 더 분명해진 건  
@@ -155,12 +164,13 @@ type PageProps = {
 레이아웃을 제공하는 공간이 아니라,  
 각 도메인의 세부 요구사항을 기억해야 하는 공간이 되었다.
 
-### Variant가 의미를 대표하게 되는 순간
+---
+### props가 의미를 대표하게 되는 순간
 
 처음에 `type`은  
 단순한 구분자에 불과했다.
 
-하지만 시간이 지나면서
+하지만 시간이 지나면서  
 `type` 하나가 페이지의 정체성 전체를 설명하게 되었다.
 
 > - 어떤 데이터 소스를 사용하는지
@@ -170,11 +180,11 @@ type PageProps = {
 이 모든 것이  
 `type` 값에 의해 결정되기 시작했다.
 
-이 순간부터 `type`은
-표현을 바꾸는 Variant가 아니라,
+이 순간부터 `type`은  
+표현을 바꾸는 props가 아니라,  
 **의미와 책임을 결정하는 값**이 되었다.
 
-Variant 추상화는
+props 기반 추상화는  
 이 지점에서 경계를 넘었다.
 
 ---
@@ -184,22 +194,23 @@ Variant 추상화는
 추상화를 했다는 사실 자체가 아니라,  
 **차이를 어떤 방식으로 흡수했는지에 대한 판단 기준이 없었다는 점**에 있었다.
 
-Variant와 Composition은  
+props 확장과 Composition은  
 모두 추상화의 한 형태지만,  
 서로 다른 문제를 해결하기 위한 방식이다.
 
 그래서 이후에는  
-차이를 하나의 컴포넌트 안에서 Variant로 흡수할 것인지,  
+차이를 하나의 컴포넌트에 props를 추가해서 흡수할 것인지,  
 아니면 경계를 유지한 채 Composition으로 풀 것인지를  
 먼저 판단하기 시작했다.
 
-### Variant와 Composition의 경계 판단 기준
+---
+### props 확장과 Composition의 경계 판단 기준
 
 아래 기준은  
-**차이를 Variant로 다룰 수 있는지**,  
+**차이를 props 추가로 다룰 수 있는지**,  
 아니면 **경계를 분리한 채 합성해야 하는지**를 판단하기 위한 표다.
 
-| 판단 항목 | Variant로 허용 | Composition으로 분리 |
+| 판단 항목 | props 추가로 허용 | Composition으로 분리 |
 |----------|----------------|----------------------|
 | UI 표현 | 색상, 스타일, 크기, 문구 차이 | UI 구조 자체가 다름 |
 | 데이터 소스 | 동일한 데이터 소스 | 서로 다른 데이터 소스 |
@@ -210,10 +221,10 @@ Variant와 Composition은
 
 이 표에서  
 오른쪽 열에 해당하는 항목이 하나라도 존재한다면,  
-그 차이는 Variant로 흡수하기에는 이미 경계를 넘은 상태다.
+그 차이는 props 추가로 흡수하기에는 이미 경계를 넘은 상태다.
 
 이 경우 문제는  
-Variant를 더 정교하게 설계하는 것이 아니라,  
+props를 더 정교하게 설계하는 것이 아니라,  
 **컴포넌트의 책임과 경계를 다시 나누는 것**에 가깝다.
 
 이 기준은  
@@ -221,8 +232,7 @@ Variant를 더 정교하게 설계하는 것이 아니라,
 **불필요한 결합을 만들지 않기 위한 기준**이다.
 
 ---
-
-## 대안: Variant 대신 합성(Composition)
+## 대안: props 확장 대신 합성(Composition)
 
 앞에서 살펴본 문제의 해법은  
 공통 컴포넌트를 더 똑똑하게 만드는 것이 아니었다.
@@ -231,9 +241,10 @@ Variant를 더 정교하게 설계하는 것이 아니라,
 **서로 다른 의미와 책임을 하나의 컴포넌트 안에 묶어두었다는 점**에 있었다.
 
 그래서 내가 선택한 대안은  
-Variant를 확장하는 대신,  
+props를 추가하는 대신,  
 **경계를 유지한 채 합성(Composition)하는 방식**이었다.
 
+---
 ### 레이아웃과 도메인의 책임 분리
 
 페이지 A, B, C는  
@@ -246,10 +257,25 @@ Variant를 확장하는 대신,
 
 ```tsx
 // shared/ui/PageLayout.tsx
-export const PageLayout = ({ children }: { children: React.ReactNode }) => {
-  return <Layout>{children}</Layout>;
+export const PageLayout = ({ 
+  header,
+  children,
+  footer 
+}: { 
+  header?: React.ReactNode;
+  children: React.ReactNode;
+  footer?: React.ReactNode;
+}) => {
+  return (
+    <Layout>
+      {header && <Header>{header}</Header>}
+      <Content>{children}</Content>
+      {footer && <Footer>{footer}</Footer>}
+    </Layout>
+  );
 };
 ```
+
 이 레이아웃은  
 어떤 페이지인지,  
 어떤 데이터를 사용하는지,  
@@ -258,6 +284,7 @@ export const PageLayout = ({ children }: { children: React.ReactNode }) => {
 그 역할은 오직 하나다.  
 구조를 제공하는 것.
 
+---
 ### 페이지는 자신의 책임만 가진다
 
 각 페이지는  
@@ -266,33 +293,84 @@ export const PageLayout = ({ children }: { children: React.ReactNode }) => {
 ```tsx
 // pages/A/PageA.tsx
 export const PageA = () => {
-  const data = useAPageLogic();
+  const { data, isChecked, handleCheck } = useAPageLogic();
 
   return (
-    <PageLayout>
-      <APageView data={data} />
+    <PageLayout
+      header={<PageAHeader title="페이지 A" />}
+      footer={null}
+    >
+      <APageContent 
+        data={data}
+        checked={isChecked}
+        onCheck={handleCheck}
+      />
     </PageLayout>
   );
 };
 ```
+
+```tsx
+// pages/B/PageB.tsx
+export const PageB = () => {
+  const { items } = useBPageLogic();
+
+  return (
+    <PageLayout
+      header={<PageBHeader title="페이지 B" />}
+      footer={<PageBFooter />}
+    >
+      <BPageContent items={items} />
+    </PageLayout>
+  );
+};
+```
+
+```tsx
+// pages/C/PageC.tsx
+export const PageC = () => {
+  const { content, hasFooter } = useCPageLogic();
+
+  return (
+    <PageLayout
+      header={<PageCHeader title="페이지 C" />}
+      footer={hasFooter ? <PageCFooter /> : null}
+    >
+      <CPageContent content={content} />
+    </PageLayout>
+  );
+};
+```
+
 이 구조에서는  
 페이지 A의 변경이  
 페이지 A 내부에서만 일어난다.  
+
+- `checked`는 PageA만의 관심사가 되고
+- `hasFooter`는 PageC만의 관심사가 된다
+- 각 페이지의 데이터 소스와 규칙은 독립적이다
 
 공통 레이어는  
 변경의 영향 범위를 알 필요가 없고,  
 각 페이지는  
 자신의 의미와 책임을 명확하게 유지한다.
 
+---
 ### Composition이 가져온 변화
+
 이 방식은  
-표면적으로는 중복이 조금 늘어나는 것처럼 보일 수 있다.  
+표면적으로는 코드가 조금 늘어나는 것처럼 보일 수 있다.  
 
 하지만 그 대가로 얻는 것은 분명하다.
 
-- 변경의 이유와 위치가 다시 가까워진다
-- 공유 레이어가 도메인으로부터 보호된다
-- Variant가 의미를 대표하지 않게 된다
+- **변경의 이유와 위치가 다시 가까워진다**  
+  PageA의 `checked` 로직은 PageA 안에만 존재한다
+  
+- **공유 레이어가 도메인으로부터 보호된다**  
+  PageLayout은 `type`도, `checked`도, `hasFooter`도 알지 못한다
+  
+- **props가 의미를 대표하지 않게 된다**  
+  각 페이지는 독립적인 컴포넌트로 자신의 정체성을 가진다
 
 중복을 줄이는 것보다 중요한 것은  
 변경을 예측 가능하게 만드는 것이었다.
@@ -302,16 +380,16 @@ export const PageA = () => {
 경계를 지키기 위한 선택이었다.
 
 ---
-## Variant 추상화는 언제까지 유효한가
+## props 기반 추상화는 언제까지 유효한가
 
-이 문서는 Variant 추상화 자체를 부정하지 않는다.
+이 문서는 props 기반 추상화 자체를 부정하지 않는다.
 
-Variant는 여전히  
-잘 정의된 문제를 해결하는 데 매우 유효한 도구다.  
-문제는 Variant를 사용하는 순간이 아니라,  
-**어디까지를 Variant로 다루느냐**에 있다.
+추상화에 props를 추가해서 차이를 흡수하는 방식은  
+여전히 잘 정의된 문제를 해결하는 데 매우 유효한 도구다.  
+문제는 props를 추가하는 순간이 아니라,  
+**어디까지를 props로 다루느냐**에 있다.
 
-Variant 추상화가 유효하려면  
+props 기반 추상화가 유효하려면  
 다음 조건들이 충족되어야 한다.
 
 - 다루는 대상의 **의미와 책임이 동일해야 한다**
@@ -321,22 +399,22 @@ Variant 추상화가 유효하려면
 - 변경이 항상 **함께 일어나야 한다**
 
 이 조건이 유지되는 한,  
-Variant는 중복을 줄이고  
+props 추가는 중복을 줄이고  
 구조를 단순하게 만드는 좋은 선택이 된다.
 
 하지만 이 조건 중 하나라도 깨지는 순간,  
-Variant는 더 이상 표현을 조절하는 도구가 아니라  
+props는 더 이상 표현을 조절하는 도구가 아니라  
 의미와 책임을 억지로 묶는 수단이 된다.
 
 이 시점부터 문제는  
-“Variant를 어떻게 설계할 것인가”가 아니라,  
+"props를 어떻게 설계할 것인가"가 아니라,  
 "**이 차이를 하나의 컴포넌트 안에 두는 것이 맞는가**"로 바뀐다.
 
-Variant 추상화는  
+props 기반 추상화는  
 경계를 대신 설명해 주지 않는다.
 
 경계를 명확히 한 뒤에만  
-Variant는 제 역할을 할 수 있다.
+props는 제 역할을 할 수 있다.
 
 ---
 
@@ -356,7 +434,7 @@ Variant는 제 역할을 할 수 있다.
 **변경의 이유가  
 한 곳에 머물도록 만드는 설계 기준**이다.
 
-Variant 추상화는  
+props 기반 추상화는  
 이 기준을 만족할 때에만 의미를 가진다.  
 표현의 차이를 다루는 한에서는 유효하지만,  
 의미와 책임을 대신 설명하기 시작하는 순간  
