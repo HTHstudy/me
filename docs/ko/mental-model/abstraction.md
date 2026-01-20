@@ -3,11 +3,11 @@ layout: default
 title: 추상화
 parent: Mental Model
 grand_parent: 한국어
-nav_order: 1
+nav_order: 3
 permalink: /docs/ko/mental-model/abstraction
 ---
 
-# 추상화
+# 추상화: "무엇을 하나로 묶을 것인가"
 
 ## 들어가며 — 왜 우리는 추상화를 오해하는가
 

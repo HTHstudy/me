@@ -7,7 +7,7 @@ nav_order: 2
 permalink: /docs/ko/mental-model/separation-of-concerns
 ---
 
-# 관심사 분리: 경계를 판단하는 기준
+# 관심사 분리: "경계를 어떻게 나눌 것인가?
 
 ## 들어가며 — 왜 이 이야기를 하게 되었는가
 
