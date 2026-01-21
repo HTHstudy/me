@@ -2,9 +2,8 @@
 layout: default
 title: 추상화
 parent: Mental Model
-grand_parent: 한국어
 nav_order: 3
-permalink: /docs/ko/mental-model/abstraction
+permalink: /docs/mental-model/abstraction
 ---
 
 # 추상화: 무엇을 하나로 묶을 것인가

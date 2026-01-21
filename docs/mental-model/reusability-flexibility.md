@@ -2,9 +2,8 @@
 layout: default
 title: 재사용과 유연성
 parent: Mental Model
-grand_parent: 한국어
 nav_order: 4
-permalink: /docs/ko/mental-model/reusability-flexibility
+permalink: /docs/mental-model/reusability-flexibility
 ---
 
 # 재사용과 유연성: 왜 재사용하려다 복잡해지는가

@@ -2,9 +2,8 @@
 layout: default
 title: 컴포넌트 복잡도
 parent: Mental Model
-grand_parent: 한국어
 nav_order: 1
-permalink: /docs/ko/mental-model/component-complexity
+permalink: /docs/mental-model/component-complexity
 ---
 
 # 컴포넌트 복잡도: 무엇이 컴포넌트를 읽기 어렵게 만드는가

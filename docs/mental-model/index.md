@@ -1,10 +1,9 @@
 ---
 layout: default
 title: Mental Model
-parent: 한국어
-nav_order: 1
+nav_order: 2
 has_children: true
-permalink: /docs/ko/mental-model
+permalink: /docs/mental-model
 ---
 
 # Mental Model

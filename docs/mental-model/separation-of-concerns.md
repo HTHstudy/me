@@ -2,9 +2,8 @@
 layout: default
 title: 관심사 분리
 parent: Mental Model
-grand_parent: 한국어
 nav_order: 2
-permalink: /docs/ko/mental-model/separation-of-concerns
+permalink: /docs/mental-model/separation-of-concerns
 ---
 
 # 관심사 분리: 경계를 어떻게 나눌 것인가
