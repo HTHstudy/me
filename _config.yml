@@ -46,3 +46,7 @@ enable_copy_code_button: true
 
 # Markdown
 markdown: kramdown
+
+# Plugins
+plugins:
+  - jekyll-remote-theme

@@ -1,22 +1,54 @@
 # Why-Driven Development
 
-왜(Why)에 집착하는 개발자입니다.  
-저는 구현보다 판단을, 패턴보다 결정을 먼저 생각합니다.  
-이 문서는 개발 과정에서 내려진 선택들을 통해  
-사고의 기준을 남기기 위한 기록입니다.  
+프론트엔드 개발에서의 의사결정과 트레이드오프를 기록하는 문서 저장소입니다.
 
 ## 📖 문서 보기
 
-문서 사이트 방문: **[https://hthstudy.github.io/me/](https://hthstudy.github.io/me/)**
+**온라인 문서 사이트:** [https://hthstudy.github.io/me/](https://hthstudy.github.io/me/)
 
-또는 **[docs/](docs/)** 폴더에서 직접 읽기
+문서 소개와 읽는 방법은 [문서 사이트](https://hthstudy.github.io/me/)에서 확인하세요.
 
-## 무엇이 있나요?
+## 🚀 로컬에서 실행하기
 
-- **Mental Model**: 프론트엔드 시스템을 어떻게 개념화하는지
-- **Decisions over Patterns**: 패턴이 결과물이지, 시작점이 아닌 이유
-<!-- - **Anti-patterns**: 현장에서 본 일반적인 실패 모드들 -->
-<!-- - **Case Studies**: 실제 리팩토링 스토리 -->
+로컬에서 Jekyll 서버를 실행하여 문서를 미리 볼 수 있습니다.
+
+### 필요 조건
+
+- Ruby 3.0 이상
+- Bundler
+
+### 설치 및 실행
+
+```bash
+# 저장소 클론
+git clone https://github.com/hthstudy/me.git
+cd me
+
+# 의존성 설치
+bundle install
+
+# Jekyll 서버 실행
+bundle exec jekyll serve
+```
+
+서버가 시작되면 브라우저에서 `http://127.0.0.1:4000/me/`로 접속하세요.
+
+### 참고
+
+- `_site/` 폴더는 Jekyll 빌드 결과물로 자동 생성됩니다 (Git에 포함되지 않음)
+- CSS 변경사항은 자동으로 재생성됩니다
+- Ruby 버전이 3.0 미만인 경우 업그레이드가 필요합니다
+
+## 📁 프로젝트 구조
+
+```
+.
+├── _config.yml          # Jekyll 설정
+├── _sass/               # 커스텀 스타일
+├── docs/                # 문서 소스 파일
+├── Gemfile              # Ruby 의존성
+└── index.md             # 문서 사이트 홈페이지
+```
 
 ## 라이센스
 

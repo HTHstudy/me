@@ -1,0 +1,24 @@
+# Jekyll 빌드 결과물
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+
+# Bundle
+.bundle/
+vendor/
+
+# 로컬 환경 설정 (필요시)
+.env
+.env.local
+
+# 운영체제 파일
+.DS_Store
+Thumbs.db
+
+# 에디터 파일
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
