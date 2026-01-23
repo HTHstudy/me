@@ -6,7 +6,11 @@ nav_order: 3
 permalink: /docs/mental-model/abstraction
 ---
 
-# 추상화: 무엇을 하나로 묶을 것인가
+# 추상화
+
+> “우리는 언제 서로 다른 것들을 하나로 묶고 싶어지는가  
+> 그 선택은 무엇을 단순하게 만들고  
+> 무엇을 고정시켜 버리는가”
 
 ## 들어가며 — 중복이 보이면 자연스럽게
 
@@ -16,29 +20,17 @@ permalink: /docs/mental-model/abstraction
 ```tsx
 // 저장 버튼
 export const SaveButton = () => {
-  return (
-    <button className="btn btn-primary">
-      저장
-    </button>
-  );
+  return <button className="btn btn-primary">저장</button>;
 };
 
 // 제출 버튼
 export const SubmitButton = () => {
-  return (
-    <button className="btn btn-primary">
-      제출
-    </button>
-  );
+  return <button className="btn btn-primary">제출</button>;
 };
 
 // 완료 버튼
 export const CompleteButton = () => {
-  return (
-    <button className="btn btn-primary">
-      완료
-    </button>
-  );
+  return <button className="btn btn-primary">완료</button>;
 };
 ```
 
@@ -90,10 +82,10 @@ export const PrimaryButton = ({ children }) => {
 
 ```tsx
 // 구체적인 것들
-SaveButton, SubmitButton, CompleteButton
+SaveButton, SubmitButton, CompleteButton;
 
 // 하나의 추상
-PrimaryButton
+PrimaryButton;
 ```
 
 이 순간 우리는 하나의 선언을 한다.
@@ -155,7 +147,9 @@ PrimaryButton
 // PrimaryButton 컴포넌트만 수정
 export const PrimaryButton = ({ children }) => {
   return (
-    <button className="btn btn-primary-v2">  {/* 여기만 바꾸면 */}
+    <button className="btn btn-primary-v2">
+      {" "}
+      {/* 여기만 바꾸면 */}
       {children}
     </button>
   );
@@ -173,7 +167,7 @@ export const PrimaryButton = ({ children }) => {
 // PrimaryButton에 클릭 효과 추가
 export const PrimaryButton = ({ children, onClick }) => {
   return (
-    <button 
+    <button
       className="btn btn-primary"
       onClick={onClick}
       onMouseDown={(e) => e.currentTarget.classList.add('active')}  {/* 모든 버튼에 추가됨 */}
@@ -210,11 +204,7 @@ export const PrimaryButton = ({ children, onClick }) => {
 export const PrimaryButton = ({ children }) => {
   // "모든 Primary 버튼은 같은 스타일을 가진다"
   // "이 버튼들은 앞으로도 함께 변할 것이다"
-  return (
-    <button className="btn btn-primary">
-      {children}
-    </button>
-  );
+  return <button className="btn btn-primary">{children}</button>;
 };
 ```
 
@@ -276,11 +266,11 @@ export const PrimaryButton = ({ children }) => {
 
 ### 중복의 종류
 
-| 구분 | 중복 | 추상화 |
-|-----|------|--------|
-| 시점 | 현재 | 미래 |
+| 구분 | 중복          | 추상화               |
+| ---- | ------------- | -------------------- |
+| 시점 | 현재          | 미래                 |
 | 의미 | 지금 비슷하다 | 앞으로도 같이 변한다 |
-| 판단 | 관찰 | 가정 |
+| 판단 | 관찰          | 가정                 |
 
 **중복을 제거한다고 해서  
 항상 추상화가 필요한 것은 아니다.**
@@ -300,11 +290,13 @@ export const PrimaryButton = ({ children }) => {
 // 사용자 프로필 페이지
 export const UserProfile = () => {
   const [data, setData] = useState(null);
-  
+
   useEffect(() => {
-    fetch('/api/user').then(res => res.json()).then(setData);
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then(setData);
   }, []);
-  
+
   if (!data) return <Loading />;
   return <div>{data.name}</div>;
 };
@@ -312,11 +304,13 @@ export const UserProfile = () => {
 // 상품 상세 페이지
 export const ProductDetail = () => {
   const [data, setData] = useState(null);
-  
+
   useEffect(() => {
-    fetch('/api/product').then(res => res.json()).then(setData);
+    fetch("/api/product")
+      .then((res) => res.json())
+      .then(setData);
   }, []);
-  
+
   if (!data) return <Loading />;
   return <div>{data.title}</div>;
 };
@@ -344,6 +338,7 @@ export const ProductDetail = () => {
 ```
 
 이것들은:
+
 - 같은 **역할**을 한다 (버튼)
 - 같은 **스타일**을 가진다
 - 같은 **규칙**을 따른다
@@ -353,12 +348,12 @@ export const ProductDetail = () => {
 
 ### 판단 기준
 
-| 질문 | 우연한 중복 | 본질적 중복 |
-|-----|-----------|-----------|
-| 같은 역할을 하는가? | ❌ | ✅ |
-| 함께 변경되는가? | ❌ | ✅ |
-| 같은 규칙을 따르는가? | ❌ | ✅ |
-| 같은 의미를 가지는가? | ❌ | ✅ |
+| 질문                  | 우연한 중복 | 본질적 중복 |
+| --------------------- | ----------- | ----------- |
+| 같은 역할을 하는가?   | ❌          | ✅          |
+| 함께 변경되는가?      | ❌          | ✅          |
+| 같은 규칙을 따르는가? | ❌          | ✅          |
+| 같은 의미를 가지는가? | ❌          | ✅          |
 
 우연한 중복은 추상화하지 않는다.  
 본질적 중복만 추상화한다.
@@ -372,13 +367,13 @@ export const ProductDetail = () => {
 
 ### 추상화 판단 기준
 
-| 질문 | Yes | No |
-|-----|-----|-----|
-| **같은 역할**을 한다고 말할 수 있는가? | 추상화 가능 | 우연한 중복 가능성 |
-| **함께 변경**될 것 같은가? | 추상화 고려 | 독립적으로 유지 |
-| 사용하는 **데이터와 규칙**이 같은가? | 추상화 가능 | 별도 관리 필요 |
-| **한 문장**으로 설명할 수 있는가? | 명확한 추상화 | 아직 이르다 |
-| 지금 추상화하지 않으면 **문제**가 생기는가? | 고려 가치 있음 | 미뤄도 됨 |
+| 질문                                        | Yes            | No                 |
+| ------------------------------------------- | -------------- | ------------------ |
+| **같은 역할**을 한다고 말할 수 있는가?      | 추상화 가능    | 우연한 중복 가능성 |
+| **함께 변경**될 것 같은가?                  | 추상화 고려    | 독립적으로 유지    |
+| 사용하는 **데이터와 규칙**이 같은가?        | 추상화 가능    | 별도 관리 필요     |
+| **한 문장**으로 설명할 수 있는가?           | 명확한 추상화  | 아직 이르다        |
+| 지금 추상화하지 않으면 **문제**가 생기는가? | 고려 가치 있음 | 미뤄도 됨          |
 
 "No"가 많을수록  
 추상화는 시기상조다.
@@ -407,8 +402,12 @@ export const ProductDetail = () => {
 
 ```tsx
 // 질문: 이것들을 추상화해야 하나?
-useEffect(() => { fetch('/api/user').then(setUser); }, []);
-useEffect(() => { fetch('/api/product').then(setProduct); }, []);
+useEffect(() => {
+  fetch("/api/user").then(setUser);
+}, []);
+useEffect(() => {
+  fetch("/api/product").then(setProduct);
+}, []);
 ```
 
 **질문 1: 같은 역할인가?**  
@@ -452,7 +451,7 @@ useEffect(() => { fetch('/api/product').then(setProduct); }, []);
 </Button>
 
 // 차이가 과도하게 숨겨짐
-<Button 
+<Button
   type="button"
   variant="primary"
   size="medium"
@@ -489,7 +488,7 @@ export const Page = ({ type, userId, onSave }) => {
 <PrimaryButton onClick={handleSave}>저장</PrimaryButton>
 
 // 사용처가 불명확해짐
-<Button 
+<Button
   as="a"
   href="/home"
   variant="primary"
@@ -510,11 +509,7 @@ export const Page = ({ type, userId, onSave }) => {
 ```tsx
 // 저장 버튼
 export const SaveButton = () => {
-  return (
-    <button className="btn btn-primary">
-      저장
-    </button>
-  );
+  return <button className="btn btn-primary">저장</button>;
 };
 ```
 
@@ -538,6 +533,7 @@ export const SaveButton = () => {
 하지만 아직 추상화하지 않는다.
 
 **차이를 관찰한다:**
+
 - 무엇이 같은가? (btn, btn-primary 클래스)
 - 무엇이 다른가? (버튼 텍스트)
 - 왜 다른가? (각 버튼의 역할)
@@ -545,6 +541,7 @@ export const SaveButton = () => {
 ### 3단계: 차이의 본질을 이해한 후 추상화
 
 관찰 결과:
+
 - 스타일은 **항상 같다**
 - 텍스트는 **각 버튼마다 다르다**
 - 이 스타일은 **앞으로도 유지될 것 같다**
@@ -553,11 +550,7 @@ export const SaveButton = () => {
 
 ```tsx
 export const PrimaryButton = ({ children }) => {
-  return (
-    <button className="btn btn-primary">
-      {children}
-    </button>
-  );
+  return <button className="btn btn-primary">{children}</button>;
 };
 ```
 
@@ -571,10 +564,12 @@ export const PrimaryButton = ({ children }) => {
 ```
 
 선택지:
+
 1. props 추가: `onClick?: () => void`
 2. 추상화 재검토: 모든 버튼이 onClick이 필요한가?
 
 **판단:**
+
 - 모든 버튼이 클릭 가능해야 한다면 → props 추가
 - 일부만 클릭 가능하다면 → 별도 컴포넌트
 
@@ -617,6 +612,7 @@ export const PrimaryButton = ({ children }) => {
 "추상화 가능한지 판단할 정보가 생긴다"는 뜻이다.
 
 세 번째에 판단하면:
+
 - 패턴이 충분히 드러났다
 - 차이가 무엇인지 명확하다
 - 우연한 중복인지 본질적 중복인지 판단 가능
@@ -638,7 +634,7 @@ export const PrimaryButton = ({ children }) => {
 <button className="btn-save">저장</button>
 
 // 잘못된 추상화: 결합됨
-<Button 
+<Button
   type="save"
   specialCaseForPageA={true}
   customStyleForModal={true}
@@ -646,23 +642,25 @@ export const PrimaryButton = ({ children }) => {
 ```
 
 중복은:
+
 - 명확하다
 - 독립적이다
 - 되돌리기 쉽다
 
 잘못된 추상화는:
+
 - 모호하다
 - 결합되어 있다
 - 되돌리기 어렵다
 
 ### 중복의 비용 vs 추상화의 비용
 
-| 구분 | 중복 | 잘못된 추상화 |
-|-----|------|-------------|
-| 명확성 | 높음 | 낮음 |
-| 결합도 | 낮음 | 높음 |
-| 변경 용이성 | 쉬움 | 어려움 |
-| 되돌리기 | 쉬움 | 어려움 |
+| 구분        | 중복 | 잘못된 추상화 |
+| ----------- | ---- | ------------- |
+| 명확성      | 높음 | 낮음          |
+| 결합도      | 낮음 | 높음          |
+| 변경 용이성 | 쉬움 | 어려움        |
+| 되돌리기    | 쉬움 | 어려움        |
 
 의심스러울 때는  
 추상화보다 중복을 택하라.
@@ -683,15 +681,15 @@ export const PrimaryButton = ({ children }) => {
 // 나쁨: 레이아웃 + 데이터 + 로직
 export const Page = ({ type }) => {
   const data = useFetch(`/api/${type}`);
-  
-  if (type === 'user') {
+
+  if (type === "user") {
     // 사용자 로직
   }
-  
-  if (type === 'product') {
+
+  if (type === "product") {
     // 상품 로직
   }
-  
+
   return <div>{/* ... */}</div>;
 };
 ```
@@ -709,7 +707,7 @@ export const PageLayout = ({ children }) => {
 
 // 사용
 export const UserPage = () => {
-  const user = useUser();  // 사용자 로직
+  const user = useUser(); // 사용자 로직
   return (
     <PageLayout>
       <UserProfile user={user} />
@@ -718,7 +716,7 @@ export const UserPage = () => {
 };
 
 export const ProductPage = () => {
-  const product = useProduct();  // 상품 로직
+  const product = useProduct(); // 상품 로직
   return (
     <PageLayout>
       <ProductDetail product={product} />

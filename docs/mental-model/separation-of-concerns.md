@@ -7,12 +7,10 @@ permalink: /docs/mental-model/separation-of-concerns
 ---
 
 # 관심사 분리
+
 > “우리는 언제 ‘나눠야겠다’고 판단하는가  
 > 나눴는데도 복잡해지는 이유는 무엇인가  
 > 잘못 잡힌 경계는 무엇을 망가뜨리는가”
-
-
-
 
 ## 들어가며 — 복잡하니까 나눠야지
 
@@ -27,33 +25,36 @@ export const UserProfile = () => {
   // 사용자 데이터
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // 편집 상태
   const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState('');
-  
+  const [editedName, setEditedName] = useState("");
+
   // 권한 확인
   const [hasPermission, setHasPermission] = useState(false);
-  
+
   useEffect(() => {
     fetchUser().then(setUser);
     checkPermission().then(setHasPermission);
   }, []);
-  
-  const handleEdit = () => { /* ... */ };
-  const handleSave = () => { /* ... */ };
-  const handleCancel = () => { /* ... */ };
-  
+
+  const handleEdit = () => {
+    /* ... */
+  };
+  const handleSave = () => {
+    /* ... */
+  };
+  const handleCancel = () => {
+    /* ... */
+  };
+
   // 100줄 이상의 렌더링 로직
-  return (
-    <div>
-      {/* 복잡한 UI */}
-    </div>
-  );
+  return <div>{/* 복잡한 UI */}</div>;
 };
 ```
 
 이 컴포넌트는:
+
 - 데이터를 가져오고
 - 편집 상태를 관리하고
 - 권한을 확인하고
@@ -85,13 +86,15 @@ export const UserProfile = () => {
 // 나쁨: 모든 것이 한 곳에
 export const UserProfile = () => {
   const [user, setUser] = useState(null);
-  
+
   useEffect(() => {
-    fetch('/api/user').then(res => res.json()).then(setUser);
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then(setUser);
   }, []);
-  
+
   if (!user) return <div>로딩중...</div>;
-  
+
   return (
     <div>
       <h1>{user.name}</h1>
@@ -102,6 +105,7 @@ export const UserProfile = () => {
 ```
 
 이 컴포넌트는:
+
 - 데이터를 **가져오는** 책임
 - 데이터를 **표시하는** 책임
 
@@ -112,20 +116,22 @@ export const UserProfile = () => {
 // 데이터 가져오기
 export const useUser = () => {
   const [user, setUser] = useState(null);
-  
+
   useEffect(() => {
-    fetch('/api/user').then(res => res.json()).then(setUser);
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then(setUser);
   }, []);
-  
+
   return user;
 };
 
 // 데이터 표시하기
 export const UserProfile = () => {
   const user = useUser();
-  
+
   if (!user) return <div>로딩중...</div>;
-  
+
   return (
     <div>
       <h1>{user.name}</h1>
@@ -163,12 +169,14 @@ export const UserProfile = () => {
 // 나쁨: 섞여 있음
 export const UserProfile = () => {
   const [user, setUser] = useState(null);
-  
+
   // API 엔드포인트 변경이 필요하면?
   useEffect(() => {
-    fetch('/api/user').then(res => res.json()).then(setUser);
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then(setUser);
   }, []);
-  
+
   // UI 레이아웃 변경이 필요하면?
   return (
     <div className="profile">
@@ -186,17 +194,19 @@ export const UserProfile = () => {
 // 좋음: 나뉘어 있음
 export const useUser = () => {
   const [user, setUser] = useState(null);
-  
+
   useEffect(() => {
-    fetch('/api/user').then(res => res.json()).then(setUser);
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then(setUser);
   }, []);
-  
+
   return user;
 };
 
 export const UserProfile = () => {
   const user = useUser();
-  
+
   return (
     <div className="profile">
       <h1>{user?.name}</h1>
@@ -232,12 +242,14 @@ export const UserProfile = () => {
   // 1. API 엔드포인트가 바뀔 때
   const [user, setUser] = useState(null);
   useEffect(() => {
-    fetch('/api/user').then(res => res.json()).then(setUser);
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then(setUser);
   }, []);
-  
+
   // 2. 권한 규칙이 바뀔 때
-  const canEdit = user?.role === 'admin';
-  
+  const canEdit = user?.role === "admin";
+
   // 3. UI 디자인이 바뀔 때
   return (
     <div>
@@ -257,21 +269,23 @@ export const UserProfile = () => {
 export const useUser = () => {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    fetch('/api/user').then(res => res.json()).then(setUser);
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then(setUser);
   }, []);
   return user;
 };
 
 // 2. 권한 확인 (비즈니스 규칙)
 export const useCanEditUser = (user) => {
-  return user?.role === 'admin';
+  return user?.role === "admin";
 };
 
 // 3. UI 표시
 export const UserProfile = () => {
   const user = useUser();
   const canEdit = useCanEditUser(user);
-  
+
   return (
     <div>
       <h1>{user?.name}</h1>
@@ -314,14 +328,17 @@ export const UserProfile = () => {
 export const UserProfile = () => {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    fetch('/api/user').then(res => res.json()).then(setUser);
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then(setUser);
   }, []);
-  
+
   return <div>{user?.name}</div>;
 };
 ```
 
 이 코드는:
+
 - API 엔드포인트가 바뀔 때 변경 → **데이터 관심사**
 - 디자인이 바뀔 때 변경 → **UI 관심사**
 
@@ -334,7 +351,7 @@ export const UserProfile = () => {
 export const useUser = () => {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    fetchUser().then(setUser);  // API가 바뀌면 여기만 수정
+    fetchUser().then(setUser); // API가 바뀌면 여기만 수정
   }, []);
   return user;
 };
@@ -343,7 +360,7 @@ export const useUser = () => {
 export const UserProfile = ({ user }) => {
   return (
     <div>
-      <h1>{user.name}</h1>  // 디자인이 바뀌면 여기만 수정
+      <h1>{user.name}</h1> // 디자인이 바뀌면 여기만 수정
     </div>
   );
 };
@@ -366,6 +383,7 @@ export const UserProfile = ({ user }) => {
 **변경의 이유가 다른가**다.
 
 같은 코드라도:
+
 - API가 바뀌는 이유로 변경되면 → 데이터 관심사
 - 디자인이 바뀌는 이유로 변경되면 → UI 관심사
 - 비즈니스 규칙이 바뀌는 이유로 변경되면 → 비즈니스 로직 관심사
@@ -414,6 +432,7 @@ export const UserProfile = ({ user }) => {
 분리의 의미가 없다.
 
 오히려:
+
 - 파일이 늘어난다
 - 추적이 어려워진다
 - 변경이 여러 곳에 흩어진다
@@ -427,11 +446,13 @@ export const UserProfile = ({ user }) => {
 // 데이터와 UI를 함께 둠
 export const UserProfile = () => {
   const [user, setUser] = useState(null);
-  
+
   useEffect(() => {
-    fetch('/api/user').then(res => res.json()).then(setUser);
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then(setUser);
   }, []);
-  
+
   return (
     <div>
       <h1>{user?.name}</h1>
@@ -441,6 +462,7 @@ export const UserProfile = () => {
 ```
 
 이 코드는:
+
 - API가 바뀌면 → 전체 컴포넌트 수정
 - 디자인이 바뀌면 → 전체 컴포넌트 수정
 
@@ -450,6 +472,7 @@ export const UserProfile = () => {
 ### 분리가 잘못되면
 
 잘못된 분리는:
+
 - 함께 변경되어야 하는 것들을 나눈다
 - 또는 다른 이유로 변경되는 것들을 함께 둔다
 
@@ -495,7 +518,6 @@ export const UserProfile = () => {
 
 ---
 
-
 ## 나누는 것의 비용
 
 분리에도 비용이 있다.
@@ -506,8 +528,8 @@ export const UserProfile = () => {
 
 분리의 비용은 보통 다음 질문으로 드러난다.
 
-- 어디를 찾아가야 하는가?  
-- 어떤 흐름을 따라가야 하는가?  
+- 어디를 찾아가야 하는가?
+- 어떤 흐름을 따라가야 하는가?
 - 어떤 규칙을 지켜야 하는가?
 
 이 질문들은 예시에 가깝다.  
@@ -517,9 +539,9 @@ export const UserProfile = () => {
 
 ```tsx
 // UserProfile.tsx
-const user = useUser();           // useUser.ts
+const user = useUser(); // useUser.ts
 const canEdit = useCanEdit(user); // useCanEdit.ts
-return <UserView user={user} />;  // UserView.tsx
+return <UserView user={user} />; // UserView.tsx
 ```
 
 이 작은 흐름 하나를 이해하려고도  
