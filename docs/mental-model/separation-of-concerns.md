@@ -6,7 +6,13 @@ nav_order: 2
 permalink: /docs/mental-model/separation-of-concerns
 ---
 
-# 관심사 분리: 경계를 어떻게 나눌 것인가
+# 관심사 분리
+> “우리는 언제 ‘나눠야겠다’고 판단하는가  
+> 나눴는데도 복잡해지는 이유는 무엇인가  
+> 잘못 잡힌 경계는 무엇을 망가뜨리는가”
+
+
+
 
 ## 들어가며 — 복잡하니까 나눠야지
 
@@ -286,91 +292,100 @@ export const UserProfile = () => {
 
 ---
 
-## 관심사의 종류
+## 관심사가 어떻게 구분되는가
 
-프론트엔드에서 자주 마주치는 관심사들:
+프론트엔드 코드를 보면  
+여러 종류의 관심사가 섞여 있다.
 
-### 1. 데이터 관심사
+하지만 중요한 것은  
+"이것은 데이터 관심사다"라고 분류하는 것이 아니라,  
+**왜 이런 관심사들이 생기는가**다.
+
+### 관심사는 변경의 이유로 구분된다
+
+관심사는 내용이 아니라,  
+**변경의 이유**로 구분된다.
+
+같은 코드라도  
+변경의 이유가 다르면 다른 관심사다.
 
 ```tsx
-// 데이터 가져오기
+// 이 코드는 어떤 관심사인가?
+export const UserProfile = () => {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    fetch('/api/user').then(res => res.json()).then(setUser);
+  }, []);
+  
+  return <div>{user?.name}</div>;
+};
+```
+
+이 코드는:
+- API 엔드포인트가 바뀔 때 변경 → **데이터 관심사**
+- 디자인이 바뀔 때 변경 → **UI 관심사**
+
+두 가지 관심사가 섞여 있다.
+
+### 변경의 이유가 다르면 다른 관심사다
+
+```tsx
+// 데이터 관심사
 export const useUser = () => {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    fetchUser().then(setUser);
+    fetchUser().then(setUser);  // API가 바뀌면 여기만 수정
   }, []);
   return user;
 };
-```
 
-변경 이유:
-- API 엔드포인트가 바뀐다
-- 데이터 구조가 바뀐다
-- 캐싱 전략이 바뀐다
-
-### 2. 비즈니스 로직 관심사
-
-```tsx
-// 권한 확인
-export const usePermission = (user) => {
-  return user?.role === 'admin' || user?.isOwner;
-};
-```
-
-변경 이유:
-- 권한 규칙이 바뀐다
-- 비즈니스 요구사항이 바뀐다
-
-### 3. UI 관심사
-
-```tsx
-// 화면 표시
+// UI 관심사
 export const UserProfile = ({ user }) => {
   return (
     <div>
-      <h1>{user.name}</h1>
+      <h1>{user.name}</h1>  // 디자인이 바뀌면 여기만 수정
     </div>
   );
 };
 ```
 
-변경 이유:
-- 디자인이 바뀐다
-- 레이아웃이 바뀐다
-- 스타일이 바뀐다
+이 둘은 변경의 이유가 다르다.
 
-### 4. 상태 관리 관심사
+- API가 바뀌면 → `useUser`만 수정
+- 디자인이 바뀌면 → `UserProfile`만 수정
 
-```tsx
-// 편집 상태
-export const useEditMode = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedValue, setEditedValue] = useState('');
-  
-  return {
-    isEditing,
-    editedValue,
-    startEdit: () => setIsEditing(true),
-    cancelEdit: () => setIsEditing(false),
-    updateValue: setEditedValue,
-  };
-};
-```
+**변경의 이유가 다르기 때문에**  
+다른 관심사로 구분된다.
 
-변경 이유:
-- 편집 흐름이 바뀐다
-- 상태 관리 방식이 바뀐다
+### 관심사 분류는 고정된 것이 아니다
+
+"데이터 관심사", "UI 관심사" 같은 분류는  
+편의를 위한 이름일 뿐이다.
+
+중요한 것은 분류가 아니라,  
+**변경의 이유가 다른가**다.
+
+같은 코드라도:
+- API가 바뀌는 이유로 변경되면 → 데이터 관심사
+- 디자인이 바뀌는 이유로 변경되면 → UI 관심사
+- 비즈니스 규칙이 바뀌는 이유로 변경되면 → 비즈니스 로직 관심사
+
+**변경의 이유가 관심사를 구분한다.**
 
 ---
 
-## 좋은 분리 vs 나쁜 분리
+## 잘못된 분리가 무엇을 망가뜨리는가
 
-모든 분리가 좋은 것은 아니다.
+분리를 하면  
+항상 좋아지는 것은 아니다.
 
-### 나쁜 분리: 억지로 나눔
+잘못된 분리는  
+오히려 복잡도를 높인다.
+
+### 함께 변경되어야 하는 것들을 나누면
 
 ```tsx
-// 나쁨: 의미 없는 분리
+// 이름과 이메일을 나눔
 export const UserNamePart = ({ name }) => {
   return <h1>{name}</h1>;
 };
@@ -389,430 +404,133 @@ export const UserProfile = ({ user }) => {
 };
 ```
 
-이것은 과도한 분리다.  
-이름과 이메일은 **함께 변경**된다.  
-나눌 이유가 없다.
+이름과 이메일은  
+**함께 변경**되어야 한다.
 
-### 좋은 분리: 책임에 따라 나눔
+- 사용자 정보 레이아웃이 바뀌면 → 둘 다 수정해야 함
+- 스타일이 바뀌면 → 둘 다 수정해야 함
+
+나눴지만 여전히 함께 변경해야 한다면,  
+분리의 의미가 없다.
+
+오히려:
+- 파일이 늘어난다
+- 추적이 어려워진다
+- 변경이 여러 곳에 흩어진다
+
+**함께 변경되어야 하는 것들을 나누면**  
+변경의 국소성이 사라진다.
+
+### 다른 이유로 변경되는 것들을 함께 두면
 
 ```tsx
-// 좋음: 의미 있는 분리
-export const UserData = ({ user }) => {
+// 데이터와 UI를 함께 둠
+export const UserProfile = () => {
+  const [user, setUser] = useState(null);
+  
+  useEffect(() => {
+    fetch('/api/user').then(res => res.json()).then(setUser);
+  }, []);
+  
   return (
     <div>
-      <h1>{user.name}</h1>
-      <p>{user.email}</p>
-    </div>
-  );
-};
-
-export const UserActions = ({ onEdit, onDelete }) => {
-  return (
-    <div>
-      <button onClick={onEdit}>편집</button>
-      <button onClick={onDelete}>삭제</button>
-    </div>
-  );
-};
-
-export const UserProfile = ({ user, onEdit, onDelete }) => {
-  return (
-    <div>
-      <UserData user={user} />
-      <UserActions onEdit={onEdit} onDelete={onDelete} />
+      <h1>{user?.name}</h1>
     </div>
   );
 };
 ```
 
-데이터 표시와 액션은  
-서로 다른 이유로 변경된다.  
-나눌 가치가 있다.
+이 코드는:
+- API가 바뀌면 → 전체 컴포넌트 수정
+- 디자인이 바뀌면 → 전체 컴포넌트 수정
+
+**다른 이유로 변경되는 것들을 함께 두면**  
+변경이 한 곳에 모이지 않는다.
+
+### 분리가 잘못되면
+
+잘못된 분리는:
+- 함께 변경되어야 하는 것들을 나눈다
+- 또는 다른 이유로 변경되는 것들을 함께 둔다
+
+둘 다 문제다.
+
+- 함께 변경되어야 하는데 나눴다 → 변경이 여러 곳에 흩어짐
+- 다른 이유로 변경되는데 함께 뒀다 → 변경이 한 곳에 모이지 않음
+
+**분리의 목적은 변경의 국소성**이다.
+
+잘못된 분리는 이 목적을 망가뜨린다.
 
 ---
 
-## 분리의 신호
+## 분리의 신호가 나타나는 이유
 
-언제 나눠야 하는지 알려주는 신호들:
+분리의 욕구는 보통 특정 신호로 먼저 나타난다.
 
-### 1. 컴포넌트가 너무 길다
+- 코드가 길어짐
+- 상태·Effect가 늘어남
+- 설명에 "그리고"가 반복됨
 
-```tsx
-// 200줄 이상의 컴포넌트
-export const UserProfile = () => {
-  // ... 100줄
-  // ... 더 많은 코드
-};
-```
-
-→ 여러 책임이 섞여 있을 가능성
-
-### 2. useEffect가 3개 이상
-
-```tsx
-export const UserProfile = () => {
-  useEffect(() => { /* 사용자 데이터 */ }, []);
-  useEffect(() => { /* 권한 확인 */ }, []);
-  useEffect(() => { /* 알림 구독 */ }, []);
-  // ...
-};
-```
-
-→ 여러 데이터 소스를 다루고 있음
-
-### 3. useState가 5개 이상
-
-```tsx
-export const UserProfile = () => {
-  const [user, setUser] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState('');
-  const [hasPermission, setHasPermission] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  // ...
-};
-```
-
-→ 여러 상태를 관리하고 있음
-
-### 4. "그리고"가 들어가는 설명
-
-> "이 컴포넌트는 사용자 데이터를 가져오고, **그리고** 편집 기능을 제공하고, **그리고** 권한을 확인한다."
-
-"그리고"가 들어가면  
-여러 책임을 가지고 있다는 신호다.
+하지만 중요한 것은 신호 자체가 아니다.  
+**신호는 기준이 아니다. 신호는 ‘변경 이유가 섞였다’는 징후일 뿐이다.**
 
 ---
 
 ## 분리의 판단 기준
 
-관심사를 나눌지 말지 판단하는 기준:
+관심사를 나눌지 말지 판단할 때  
+던져야 할 질문들이 있다.
 
-| 질문 | Yes | No |
-|-----|-----|-----|
-| **독립적으로 변경**되는가? | 나눈다 | 함께 둔다 |
-| **재사용**될 가능성이 있는가? | 나눈다 | 함께 둔다 |
-| **테스트**를 독립적으로 해야 하는가? | 나눈다 | 함께 둔다 |
-| 변경 **이유가 다른가**? | 나눈다 | 함께 둔다 |
-| **이해하기** 쉬워지는가? | 나눈다 | 함께 둔다 |
+- 변경 **이유가 다른가?**
+- **독립적으로 변경**되는가?
+- **함께 변경**되어야 하는가?
 
-"나눈다"가 3개 이상이면  
-분리할 가치가 있다.
+이 질문들에 대한 답이  
+나눌지 말지를 결정한다.
 
----
-
-## 나누는 방법
-
-관심사를 나누는 구체적인 방법들:
-
-### 1. Custom Hook으로 분리
-
-```tsx
-// 데이터 로직 분리
-export const useUser = (userId) => {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  
-  useEffect(() => {
-    setIsLoading(true);
-    fetchUser(userId)
-      .then(setUser)
-      .finally(() => setIsLoading(false));
-  }, [userId]);
-  
-  return { user, isLoading };
-};
-
-// 사용
-export const UserProfile = ({ userId }) => {
-  const { user, isLoading } = useUser(userId);
-  
-  if (isLoading) return <Loading />;
-  return <div>{user.name}</div>;
-};
-```
-
-### 2. 컴포넌트로 분리
-
-```tsx
-// UI 로직 분리
-export const UserAvatar = ({ user }) => {
-  return (
-    <div className="avatar">
-      <img src={user.avatar} alt={user.name} />
-    </div>
-  );
-};
-
-export const UserInfo = ({ user }) => {
-  return (
-    <div className="info">
-      <h1>{user.name}</h1>
-      <p>{user.email}</p>
-    </div>
-  );
-};
-
-// 조합
-export const UserProfile = ({ user }) => {
-  return (
-    <div>
-      <UserAvatar user={user} />
-      <UserInfo user={user} />
-    </div>
-  );
-};
-```
-
-### 3. 유틸 함수로 분리
-
-```tsx
-// 비즈니스 로직 분리
-export const canEditUser = (currentUser, targetUser) => {
-  return currentUser.role === 'admin' || currentUser.id === targetUser.id;
-};
-
-export const formatUserName = (user) => {
-  return `${user.firstName} ${user.lastName}`;
-};
-
-// 사용
-export const UserProfile = ({ user, currentUser }) => {
-  const canEdit = canEditUser(currentUser, user);
-  const displayName = formatUserName(user);
-  
-  return (
-    <div>
-      <h1>{displayName}</h1>
-      {canEdit && <button>편집</button>}
-    </div>
-  );
-};
-```
+중요한 것은  
+체크리스트를 채우는 것이 아니라,  
+**변경의 이유를 명확히 보는 것**이다.
 
 ---
+
 
 ## 나누는 것의 비용
 
 분리에도 비용이 있다.
 
-### 비용 1: 파일이 늘어난다
+하지만 중요한 것은  
+비용을 열거하는 것이 아니라,  
+**비용의 성격을 이해하는 것**이다.
 
-```
-// 분리 전: 1개 파일
-UserProfile.tsx
+분리의 비용은 보통 다음 질문으로 드러난다.
 
-// 분리 후: 4개 파일
-UserProfile.tsx
-useUser.ts
-UserAvatar.tsx
-UserInfo.tsx
-```
+- 어디를 찾아가야 하는가?  
+- 어떤 흐름을 따라가야 하는가?  
+- 어떤 규칙을 지켜야 하는가?
 
-### 비용 2: 추적이 어려워진다
+이 질문들은 예시에 가깝다.  
+맥락에 따라 다른 질문이 더 중요할 수도 있다.
 
-```tsx
-// 분리 전: 한 곳에서 모든 것
-export const UserProfile = () => {
-  // 여기서 모든 것 확인 가능
-};
-
-// 분리 후: 여러 곳 확인 필요
-export const UserProfile = () => {
-  const { user } = useUser();  // useUser.ts 확인 필요
-  return <UserInfo user={user} />;  // UserInfo.tsx 확인 필요
-};
-```
-
-### 비용 3: 과도한 추상화
+예를 들어:
 
 ```tsx
-// 나쁨: 과도한 분리
-export const useFetchData = () => { /* ... */ };
-export const useLoadingState = () => { /* ... */ };
-export const useErrorState = () => { /* ... */ };
-export const useDataProcessing = () => { /* ... */ };
-export const useDataValidation = () => { /* ... */ };
-// ...
+// UserProfile.tsx
+const user = useUser();           // useUser.ts
+const canEdit = useCanEdit(user); // useCanEdit.ts
+return <UserView user={user} />;  // UserView.tsx
 ```
 
-모든 것을 나누면  
-오히려 복잡해진다.
+이 작은 흐름 하나를 이해하려고도  
+파일을 넘나들어야 한다.  
+이 순간 비용이 생긴다.
 
----
+어떤 비용이 더 크게 느껴지는지는  
+팀, 코드베이스 크기, 도구, 테스트 전략에 따라 달라진다.
 
-## 적절한 균형
-
-관심사 분리의 목표는  
-**모든 것을 나누는 것이 아니라**,  
-**적절한 균형을 찾는 것**이다.
-
-### 나누지 않아도 되는 경우
-
-- 항상 함께 변경되는 것
-- 서로 강하게 의존하는 것
-- 재사용 가능성이 없는 것
-- 분리해도 이해하기 쉬워지지 않는 것
-
-### 반드시 나눠야 하는 경우
-
-- 독립적으로 변경되는 것
-- 재사용될 가능성이 있는 것
-- 독립적으로 테스트해야 하는 것
-- 변경 이유가 명확히 다른 것
-
----
-
-## 예시: 실전 적용
-
-### Before: 섞여 있음
-
-```tsx
-export const UserProfile = ({ userId }) => {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState('');
-  
-  useEffect(() => {
-    setIsLoading(true);
-    fetch(`/api/users/${userId}`)
-      .then(res => res.json())
-      .then(setUser)
-      .finally(() => setIsLoading(false));
-  }, [userId]);
-  
-  const handleEdit = () => {
-    setIsEditing(true);
-    setEditedName(user.name);
-  };
-  
-  const handleSave = () => {
-    fetch(`/api/users/${userId}`, {
-      method: 'PUT',
-      body: JSON.stringify({ name: editedName })
-    }).then(() => {
-      setUser({ ...user, name: editedName });
-      setIsEditing(false);
-    });
-  };
-  
-  if (isLoading) return <div>로딩중...</div>;
-  
-  return (
-    <div>
-      {isEditing ? (
-        <div>
-          <input 
-            value={editedName} 
-            onChange={(e) => setEditedName(e.target.value)} 
-          />
-          <button onClick={handleSave}>저장</button>
-          <button onClick={() => setIsEditing(false)}>취소</button>
-        </div>
-      ) : (
-        <div>
-          <h1>{user.name}</h1>
-          <button onClick={handleEdit}>편집</button>
-        </div>
-      )}
-    </div>
-  );
-};
-```
-
-### After: 관심사 분리
-
-```tsx
-// 1. 데이터 관심사
-export const useUser = (userId) => {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  
-  useEffect(() => {
-    setIsLoading(true);
-    fetch(`/api/users/${userId}`)
-      .then(res => res.json())
-      .then(setUser)
-      .finally(() => setIsLoading(false));
-  }, [userId]);
-  
-  const updateUser = (updates) => {
-    return fetch(`/api/users/${userId}`, {
-      method: 'PUT',
-      body: JSON.stringify(updates)
-    }).then(() => {
-      setUser({ ...user, ...updates });
-    });
-  };
-  
-  return { user, isLoading, updateUser };
-};
-
-// 2. 편집 상태 관심사
-export const useEditMode = (initialValue) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedValue, setEditedValue] = useState(initialValue);
-  
-  return {
-    isEditing,
-    editedValue,
-    startEdit: () => {
-      setIsEditing(true);
-      setEditedValue(initialValue);
-    },
-    updateValue: setEditedValue,
-    cancelEdit: () => setIsEditing(false),
-    save: (onSave) => {
-      onSave(editedValue);
-      setIsEditing(false);
-    },
-  };
-};
-
-// 3. UI 관심사
-export const UserDisplay = ({ user, onEdit }) => {
-  return (
-    <div>
-      <h1>{user.name}</h1>
-      <button onClick={onEdit}>편집</button>
-    </div>
-  );
-};
-
-export const UserEdit = ({ value, onChange, onSave, onCancel }) => {
-  return (
-    <div>
-      <input value={value} onChange={(e) => onChange(e.target.value)} />
-      <button onClick={onSave}>저장</button>
-      <button onClick={onCancel}>취소</button>
-    </div>
-  );
-};
-
-// 4. 조합
-export const UserProfile = ({ userId }) => {
-  const { user, isLoading, updateUser } = useUser(userId);
-  const editMode = useEditMode(user?.name);
-  
-  if (isLoading) return <div>로딩중...</div>;
-  
-  return (
-    <div>
-      {editMode.isEditing ? (
-        <UserEdit
-          value={editMode.editedValue}
-          onChange={editMode.updateValue}
-          onSave={() => editMode.save((name) => updateUser({ name }))}
-          onCancel={editMode.cancelEdit}
-        />
-      ) : (
-        <UserDisplay user={user} onEdit={editMode.startEdit} />
-      )}
-    </div>
-  );
-};
-```
+비용은 분리의 결과다.  
+그래서 분리는 항상 트레이드오프다.
 
 ---
 
@@ -827,30 +545,13 @@ export const UserProfile = ({ userId }) => {
 > 각 모듈/컴포넌트가  
 > 하나의 이유로만 변경되도록 만드는 것.
 
-### 관심사 분리를 하는 이유
-
-- 변경이 한 곳에서만 일어나게 (변경의 국소성)
-- 코드를 이해하기 쉽게
-- 테스트를 독립적으로
-- 재사용 가능하게
-
-### 관심사를 나누는 기준
-
-- 변경의 이유가 다른가?
-- 독립적으로 변경되는가?
-- 재사용될 가능성이 있는가?
-
-### 나누는 것의 균형
-
-모든 것을 나누는 것이 답이 아니다.  
-적절한 균형이 중요하다.
-
-- 너무 적게 나누면 → 복잡해진다
-- 너무 많이 나누면 → 추적하기 어렵다
-
-중요한 것은  
-**변경의 이유를 명확히 하는 것**이다.
+이것이 관심사 분리의 본질이다.
 
 관심사 분리는  
-복잡도를 다루기 위한  
-가장 기본적이고 강력한 원칙이다.
+구조를 예쁘게 만들기 위한 선택이 아니라,  
+미래의 변경을 예측하고 감당하기 위한 결정이다.
+
+변경의 이유가 다르면 나누고,  
+함께 변경되어야 하면 함께 둔다.
+
+이것이 판단의 출발점이다.
