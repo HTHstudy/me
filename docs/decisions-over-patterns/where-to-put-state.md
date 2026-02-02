@@ -2,7 +2,7 @@
 layout: default
 title: 상태를 어디에 둘 것인가
 parent: Decisions over Patterns
-nav_order: 1
+nav_order: 2
 permalink: /docs/decisions-over-patterns/where-to-put-state
 ---
 
