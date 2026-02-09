@@ -47,6 +47,12 @@ enable_copy_code_button: true
 # Markdown
 markdown: kramdown
 
+# Exclude
+exclude:
+  - CLAUDE.md
+  - docs/mental-model/CLAUDE.md
+  - docs/decisions-over-patterns/CLAUDE.md
+
 # Plugins
 plugins:
   - jekyll-remote-theme
