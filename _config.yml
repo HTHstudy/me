@@ -52,6 +52,8 @@ exclude:
   - CLAUDE.md
   - docs/mental-model/CLAUDE.md
   - docs/decisions-over-patterns/CLAUDE.md
+  - docs/deep-dives/CLAUDE.md
+  - docs/why-then-how/CLAUDE.md
 
 # Plugins
 plugins:
