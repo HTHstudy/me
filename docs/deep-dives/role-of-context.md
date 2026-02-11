@@ -367,7 +367,7 @@ Context의 값이 바뀌면
 이것은 자주 바뀌지 않는 값에는 문제가 되지 않지만,  
 자주 바뀌는 값에는 다른 도구가 적합하다는 뜻이다.
 
-[상태를 어디에 둘 것인가](/docs/decisions-over-patterns/where-to-put-state)에서  
+[상태를 어디에 둘 것인가](/me/docs/decisions-over-patterns/where-to-put-state)에서  
 Context는 상태를 배치하는 선택지 중 하나로 등장한다.  
 이 문서에서 다룬 Context의 본질을 이해하면  
 그 선택이 어떤 상황에서 자연스러운지 판단하기 수월해진다.
